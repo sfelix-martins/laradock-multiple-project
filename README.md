@@ -50,16 +50,3 @@ After configure your projects on `Projects.yml` file you can execute the script
 
 Wait the process finish and your laradock should be started with your chosen
 project definitions.
-
-## TODO
-
-Map what containers must be rebuilt when a `.env` config was changed. E.g.:
-
-When change the var `PHP_VERSION` the containers `php-fpm` and `workspace` must
-be rebuilt.
-
-```yml
-PHP_VERSION:
-  - php-fpm
-  - workspace
-```
