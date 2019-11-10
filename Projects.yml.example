@@ -1,0 +1,15 @@
+site_1:
+  env:
+    - PHP_VERSION: 7.3
+  services:
+    - nginx
+    - mysql
+    - mailhog
+
+site_2:
+  env:
+    - PHP_VERSION: 7.1
+  services:
+    - apache2
+    - postgres
+    - maildev

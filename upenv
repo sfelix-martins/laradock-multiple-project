@@ -1,0 +1,117 @@
+#!/usr/bin/env python
+
+import yaml
+import sys
+import subprocess
+
+def mount_docker_compose_cmd(project):
+  """ 
+  Mount docker compose command based on project services defined on Yaml config 
+  file.
+  
+  Parameters:
+  project (dict): Project definitions.
+
+  Returns:
+  str: The mounted docker-compose command.
+  """
+  return 'docker-compose up -d ' + ' '.join(project['services'])
+
+
+def define_env(project):
+  """
+  Define .env variables according to project definitions.
+
+  Parameters:
+  project (dict): Project definitions
+
+  Returns:
+  list: A list of changed variables names.
+  """
+  env_vars = project.get('env')
+
+  if not env_vars:
+    return
+
+  changed_vars = []
+  for var in env_vars:
+    for key in var:
+      value = str(var[key])
+
+    # Get the var old value in .env file
+    old_value = subprocess.check_output(
+      ["grep "+key+" ../.env | awk -F= '{print $2}'"],
+      shell=True
+    )
+
+    # Check if the key exists with the same value
+    if old_value.strip() != value:
+      changed_vars.append(key)
+    
+    # Create a backup of .env file and change the var value.
+    subprocess.call(
+      ["sed -i .bak '/^" + str(key) + "/s/=.*$/="+value+"/' ../.env"],
+      shell=True
+    )
+
+  return changed_vars
+
+
+def get_containers_to_rebuild(changed_vars):
+  """
+  Get containers to rebuild based on changed vars.
+
+  Will return the containers defined for each env variable received on 
+  changed_vars param. The env variables and containers to build mapping must be 
+  defined in the `env_var_container_build.yml` file in the same folder of the 
+  script.
+
+  Parameters:
+  changed_vars (list): A list with the changed vars names.
+
+  Returns:
+  list: A list of containers names that must be rebuilt.
+  """
+  containers = []
+  with open('env_var_container_build.yml', 'r') as stream:
+    try:
+      env_vars_containers_build = yaml.safe_load(stream)
+      for data in env_vars_containers_build:
+        containers += env_vars_containers_build[data]
+
+      # Remove duplicated
+      containers = list(dict.fromkeys(containers))
+    except yaml.YAMLError as exc:
+      print('Error parsing env_var_container_build.yml')  
+      print(exc)
+
+  return containers
+
+project_to_up = sys.argv[1]
+
+# Entrypoint
+with open('Projects.yml', 'r') as stream:
+  try:
+    print('*** Up environment to project ' + project_to_up + ' ***')
+    projects = yaml.safe_load(stream)
+    # Iterate projects defined on `Projects.yml` file
+    for project in projects:
+      if project == project_to_up:
+        changed_vars = define_env(projects[project])
+        cmd = mount_docker_compose_cmd(projects[project])
+        
+        # Run the necessary commands to up the environment accordint to project
+        if changed_vars:
+          for container in get_containers_to_rebuild(changed_vars):
+            print('Build containers')
+            # subprocess.call(['docker-compose build ' + container], shell=True)
+          
+          print('Down docker compose')
+          # subprocess.call(['docker-compose down'], shell=True)
+        
+        print('Call command')
+        # subprocess.call([cmd], shell=True)   
+    print('Finished!')
+  except yaml.YAMLError as exc:
+      print('Error parsing Projects.yml')
+      print(exc)
