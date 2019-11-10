@@ -143,11 +143,11 @@ laravel_project:
           # Run the necessary commands to up the environment accordint to project
           if changed_vars:
             for container in get_containers_to_rebuild(changed_vars):
-              subprocess.call(['docker-compose build ' + container], shell=True)
+              subprocess.call(['docker-compose build ' + container], shell=True, cwd='..')
             
-            subprocess.call(['docker-compose down'], shell=True)
+            subprocess.call(['docker-compose down'], shell=True, cwd='..')
           
-          subprocess.call([cmd], shell=True)   
+          subprocess.call([cmd], shell=True, cwd='..')   
       print('Finished!')
       exit()
     except yaml.YAMLError as exc:
