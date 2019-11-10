@@ -133,7 +133,6 @@ laravel_project:
         exit()  
 
       print('*** UpEnv to project ' + project_to_up + ' started! ***')
-      exit()
 
       # Iterate projects defined on `Projects.yml` file
       for project in projects:
