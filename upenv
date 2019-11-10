@@ -31,7 +31,7 @@ def define_env(project):
   env_vars = project.get('env')
 
   if not env_vars:
-    return
+    return []
 
   changed_vars = []
   for var in env_vars:
@@ -87,31 +87,77 @@ def get_containers_to_rebuild(changed_vars):
 
   return containers
 
-project_to_up = sys.argv[1]
+project_to_up = sys.argv[1] if len(sys.argv) > 1 else None
 
 # Entrypoint
-with open('Projects.yml', 'r') as stream:
-  try:
-    print('*** Up environment to project ' + project_to_up + ' ***')
-    projects = yaml.safe_load(stream)
-    # Iterate projects defined on `Projects.yml` file
-    for project in projects:
-      if project == project_to_up:
-        changed_vars = define_env(projects[project])
-        cmd = mount_docker_compose_cmd(projects[project])
-        
-        # Run the necessary commands to up the environment accordint to project
-        if changed_vars:
-          for container in get_containers_to_rebuild(changed_vars):
-            print('Build containers')
-            # subprocess.call(['docker-compose build ' + container], shell=True)
+try:
+  with open('Projects.yml', 'r') as stream:
+    try:
+      
+      projects = yaml.safe_load(stream)
+      if not projects:
+        print('ERROR: No one project defined in your Projects.yml file!')
+        print(
+          """Hint: Setup at least one project in your Projects.yml. E.g.:
+
+# Project name
+laravel_project:
+  # Environment vars that will override the `.env` vars from laradock
+  env:
+    - PHP_VERSION: 7.3
+  # The containers that will be executed
+  services:
+    - nginx
+    - mysql
+    - mailhog
+          """
+        )
+        exit()
+
+      projects_names = projects.keys()
+
+      if not project_to_up:
+        print('ERROR: The first param with the project name is required!')
+        print(
+          'Hint: You must choose between one of these projects: ' + 
+          ', '.join(projects_names) + '.'
+        ) 
+        exit()  
+
+      if project_to_up not in projects_names:
+        print('ERROR: Project "' + project_to_up + '" is not defined!')
+        print(
+          'Hint: You must define the project on Project.yml file or ' +
+          'choose one of these projects: ' + ', '.join(projects_names) + '.'
+        )
+        exit()  
+
+      print('*** UpEnv to project ' + project_to_up + ' started! ***')
+      exit()
+
+      # Iterate projects defined on `Projects.yml` file
+      for project in projects:
+        if project == project_to_up:
+          changed_vars = define_env(projects[project])
+          cmd = mount_docker_compose_cmd(projects[project])
           
-          print('Down docker compose')
-          # subprocess.call(['docker-compose down'], shell=True)
-        
-        print('Call command')
-        # subprocess.call([cmd], shell=True)   
-    print('Finished!')
-  except yaml.YAMLError as exc:
-      print('Error parsing Projects.yml')
-      print(exc)
+          # Run the necessary commands to up the environment accordint to project
+          if changed_vars:
+            for container in get_containers_to_rebuild(changed_vars):
+              subprocess.call(['docker-compose build ' + container], shell=True)
+            
+            subprocess.call(['docker-compose down'], shell=True)
+          
+          subprocess.call([cmd], shell=True)   
+      print('Finished!')
+      exit()
+    except yaml.YAMLError as exc:
+        print('Error parsing Projects.yml')
+        print(exc)
+except IOError as exc:
+  print('ERROR: Config file Projects.yml not found!')
+  print(
+    'Hint: Copy the file Projects.yml.example to Projects.yml and setup ' +
+    'your projects definitions.'
+  )
+  exit()
