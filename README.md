@@ -1,4 +1,4 @@
-## Laradock UpEnv
+## Laradock Multiple Env
 
 Script to helps the use of multiple projects on Laradock.
 
@@ -12,8 +12,8 @@ Script to helps the use of multiple projects on Laradock.
 Clone the project inside laradock project folder and access the cloned folder:
 
 ```sh
-git clone https://github.com/sfelix-martins/laradock-up-env.git up-env
-cd up-env
+git clone https://github.com/sfelix-martins/laradock-multiple-env.git multiple-env
+cd multiple-env
 ```
 
 ## Configuration
