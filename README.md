@@ -19,6 +19,7 @@ cd multiple-env
 Install the project dependencies from `requirements.txt`:
 
 ```shell script
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
