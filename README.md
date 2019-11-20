@@ -11,22 +11,29 @@ Script to helps the use of multiple projects on Laradock.
 
 Clone the project inside laradock project folder and access the cloned folder:
 
-```sh
+```shell script
 git clone https://github.com/sfelix-martins/laradock-multiple-env.git multiple-env
 cd multiple-env
+```
+
+Install the project dependencies from `requirements.txt`:
+
+```shell script
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
 ## Configuration
 
 Copy the file `Projects.yml.example` to `Projects.yml`:
 
-```sh
+```shell script
 cp Projects.yml.example Projects.yml
 ```
 
 Set your projects configs on `Projects.yml` file.
 
-```yml
+```yaml
 # Project name
 laravel_project:
   # Environment vars that will override the `.env` vars from laradock
@@ -42,10 +49,10 @@ laravel_project:
 ## Usage
 
 After configure your projects on `Projects.yml` file you can execute the script
-`upenv` passing the project name on first param:
+`laradock` passing the project name on first param:
 
-```sh
-./upenv laravel_project
+```shell script
+./laradock up laravel_project
 ```
 
 Wait the process finish and your laradock should be started with your chosen
@@ -53,7 +60,7 @@ project definitions.
 
 **WARNING:** Remember back to laradock root folder to execute other default docker commands. E.g:
 
-```sh
+```shell script
 cd ..
 docker-compose exec --user=laradock workspace bash
 ```

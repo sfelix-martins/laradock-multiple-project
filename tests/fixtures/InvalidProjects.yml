@@ -1,0 +1,6 @@
+site_1:
+      env:
+        - TEST: 1
+  services:
+    - nginx
+    - mysql

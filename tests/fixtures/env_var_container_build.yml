@@ -1,0 +1,3 @@
+PHP_VERSION:
+  - php-fpm
+  - workspace
