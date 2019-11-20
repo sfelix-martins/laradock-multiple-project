@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+import sys
+
+from multienv.exceptions import HintMessageException
+from multienv.multi_env import MultiEnv
+from multienv.config import Config
+
+
+def abort(error, hint=''):
+    """
+    Abort execution.
+
+    Abort execution printing a message and a hint (optional).
+
+    Parameters:
+    error (str): The error message that will be shown
+    hint (str): A hint how to fix the error
+
+    Returns:
+    void
+    """
+    print('ERROR: ' + error.strip())
+
+    if hint:
+        print('Hint: ' + hint.strip())
+
+    exit()
+
+
+# Entry point
+cmd = sys.argv[1] if len(sys.argv) > 1 else None
+project_to_up = sys.argv[2] if len(sys.argv) > 2 else None
+
+if not cmd:
+    abort(error='The first param with the command is required!',
+          hint='The unique available command is "up". E.g.: laradock up '
+               'project_name')
+
+if cmd != 'up':
+    abort(error='Invalid command "' + cmd + '"',
+          hint='The unique available command is "up". E.g.: laradock up '
+               'project_name')
+
+if not project_to_up:
+    abort(error='The second param with the project name is required!')
+
+try:
+    config = Config(
+        dot_env='../.env',
+        env_var_container_build='config/env_var_container_build.yml',
+        projects='Projects.yml')
+
+    multi_env = MultiEnv(project_to_up, config)
+    multi_env.up()
+except HintMessageException as exc:
+    abort(error=exc.error, hint=exc.hint)
