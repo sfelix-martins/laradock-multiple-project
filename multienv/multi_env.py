@@ -109,8 +109,7 @@ class MultiEnv:
                 ["sed -i .bak '/^"
                  + env_var.name + "/s/=.*$/="
                  + env_var.value + "/' " + self.config.dot_env_file()],
-                shell=True
-            )
+                shell=True)
 
     def up(self):
         self.define_env()
