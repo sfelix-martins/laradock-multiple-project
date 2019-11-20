@@ -37,66 +37,58 @@ class MultiEnv:
     def define_project(self):
         try:
             with open(self.config.projects_config(), 'r') as stream:
-                try:
-                    projects_definitions = yaml.safe_load(stream)
+                project_definition = self.get_project_definition(stream)
+                env_vars = self.get_defined_env_vars(project_definition)
+                services = self.get_defined_services(project_definition)
 
-                    project_definition = projects_definitions.get(
-                        self.project_name
-                    )
-                    if not project_definition:
-                        raise ProjectNotDefinedException(
-                            error='Project "' + self.project_name +
-                                  '" is not defined!',
-                            hint='You must define the project on Project.yml '
-                                 'file or choose one of these projects: ' +
-                                 ', '.join(projects_definitions) + '.')
-
-                    env_vars = []
-                    defined_env_vars = project_definition.get('env')
-                    if defined_env_vars:
-                        for var in defined_env_vars:
-                            for key in var:
-                                value = str(var[key])
-
-                            env_vars.append(EnvVar(key, value, self.config))
-
-                    defined_services = project_definition.get('services')
-                    if not defined_services:
-                        raise ServicesNotDefinedException(
-                            error='No one service defined to project "' +
-                                  self.project_name,
-                            hint="""Setup the project services in your 
-Projects.yml. E.g.:
-
-# Project name
-laravel_project:
-  # Environment vars that will override the `.env` vars from laradock
-  env:
-    - PHP_VERSION: 7.3
-  # The containers that will be executed
-  services:
-    - nginx
-    - mysql
-    - mailhog
-  """)
-
-                    services = []
-                    for defined_service in defined_services:
-                        services.append(Service(defined_service))
-
-                    self.project = Project(
-                        self.project_name,
-                        env_vars,
-                        services
-                    )
-                except yaml.YAMLError:
-                    raise InvalidYamlFileException(
-                        error='Error parsing project definitions file')
+                self.project = Project(
+                    self.project_name,
+                    env_vars,
+                    services)
         except IOError:
             raise ConfigFileNotFoundException(
                 error='Config file not found!',
                 hint='Copy the file Projects.yml.example to Projects.yml and '
                      'setup your projects definitions. ')
+
+    def get_defined_env_vars(self, project_definition):
+        env_vars = []
+        defined_env_vars = project_definition.get('env')
+        if defined_env_vars:
+            for var in defined_env_vars:
+                for key in var:
+                    value = str(var[key])
+
+                env_vars.append(EnvVar(key, value, self.config))
+
+        return env_vars
+
+    def get_defined_services(self, project_definition):
+        defined_services = project_definition.get('services')
+        if not defined_services:
+            raise ServicesNotDefinedException(
+                error='No one service defined to project "' +
+                      self.project_name,
+                hint="""Setup the project services in your
+        Projects.yml. E.g.:
+
+        # Project name
+        laravel_project:
+          # Environment vars that will override the `.env` vars from laradock
+          env:
+            - PHP_VERSION: 7.3
+          # The containers that will be executed
+          services:
+            - nginx
+            - mysql
+            - mailhog
+          """)
+
+        services = []
+        for defined_service in defined_services:
+            services.append(Service(defined_service))
+
+        return services
 
     def define_env(self):
         for env_var in self.project.env_vars:
@@ -132,3 +124,21 @@ laravel_project:
         self.docker_compose.up(self.project.get_services_names(), detached=True)
 
         return True
+
+    def get_project_definition(self, stream):
+        try:
+            projects_definitions = yaml.safe_load(stream)
+
+            project_definition = projects_definitions.get(self.project_name)
+            if not project_definition:
+                raise ProjectNotDefinedException(
+                    error='Project "' + self.project_name +
+                          '" is not defined!',
+                    hint='You must define the project on Project.yml '
+                         'file or choose one of these projects: ' +
+                         ', '.join(projects_definitions) + '.')
+
+            return project_definition
+        except yaml.YAMLError:
+            raise InvalidYamlFileException(
+                error='Error parsing project definitions file')
