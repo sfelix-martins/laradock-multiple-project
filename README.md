@@ -2,7 +2,7 @@
 
 Script to helps the use of multiple projects on Laradock.
 
-![](https://github.com/sfelix-martins/laradock-multiple-env/workflows/Python%20package/badge.svg?branch=1.x)
+![](https://github.com/sfelix-martins/laradock-multiple-env/workflows/Python%20package/badge.svg)
 
 ## Pre-requisites
 
