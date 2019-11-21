@@ -1,5 +1,6 @@
 import unittest
-from unittest import mock
+import mock
+
 
 from multienv.docker_compose import DockerCompose
 
