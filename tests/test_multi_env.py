@@ -1,6 +1,5 @@
 import unittest
 import subprocess
-import os
 from mock import MagicMock
 
 from multienv.docker_compose import DockerCompose
