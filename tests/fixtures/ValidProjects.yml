@@ -1,0 +1,10 @@
+site_1:
+  env:
+    - PHP_VERSION: 7.2
+  services:
+    - nginx
+    - mysql
+
+site_without_services:
+  env:
+    - PHP_VERSION: 7.2

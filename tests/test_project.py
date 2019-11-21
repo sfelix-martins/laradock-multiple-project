@@ -9,9 +9,10 @@ from multienv.service import Service
 class ProjectTestCase(unittest.TestCase):
     def test_get_services_names(self):
         config = Config(
-            dot_env='fixtures/.env',
-            env_var_container_build='fixtures/env_var_container_build.yml',
-            projects='fixtures/Projects.yml'
+            dot_env='tests/fixtures/.env.valid',
+            env_var_container_build='tests/fixtures/'
+                                    'env_var_container_build.yml',
+            projects='tests/fixtures/ValidProjects.yml'
         )
         project = Project(
             'site',

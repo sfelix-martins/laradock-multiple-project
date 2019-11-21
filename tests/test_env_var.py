@@ -9,7 +9,8 @@ from multienv.exceptions import InvalidYamlFileException, \
 class EnvVarTestCase(unittest.TestCase):
     def test_get_containers_to_rebuild_with_existent_env_var(self):
         config = Config(
-            env_var_container_build='tests/fixtures/env_var_container_build.yml')
+            env_var_container_build='tests/fixtures/'
+                                    'env_var_container_build.yml')
         env_var = EnvVar('PHP_VERSION', 7.1, config)
         self.assertEqual(
             env_var.get_containers_to_rebuild(),
@@ -18,7 +19,8 @@ class EnvVarTestCase(unittest.TestCase):
 
     def test_get_containers_to_rebuild_with_not_exists_env_var(self):
         config = Config(
-            env_var_container_build='tests/fixtures/env_var_container_build.yml')
+            env_var_container_build='tests/fixtures/'
+                                    'env_var_container_build.yml')
         env_var = EnvVar('MYSQL_VERSION', 5.7, config)
         self.assertEqual(env_var.get_containers_to_rebuild(), [])
 
