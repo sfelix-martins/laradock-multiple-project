@@ -34,21 +34,6 @@ class MultiEnvTestCase(unittest.TestCase):
             self.assertEqual(env.value, str(7.2))
 
     def test_env_var_was_changed(self):
-        # Define vars to .env file
-        initial_value = str(5.6)
-        subprocess.call(
-            ["sed -i .bak '/^PHP_VERSION/s/=.*$/="
-             + initial_value + "/' tests/fixtures/.env_"],
-            shell=True
-        )
-
-        env_var_before_test = subprocess.check_output(
-            ["grep PHP_VERSION tests/fixtures/.env_ | awk -F= '{print $2}'"],
-            shell=True
-        ).decode('utf-8')
-
-        self.assertEqual(initial_value, env_var_before_test.strip())
-
         config = Config(
             dot_env='tests/fixtures/.env_',
             env_var_container_build='tests/fixtures/'
@@ -66,17 +51,6 @@ class MultiEnvTestCase(unittest.TestCase):
         ).decode('utf-8')
 
         self.assertEqual(str(7.2), env_var.strip())
-
-        # Assert created backup file with previous .env vars
-        self.assertTrue(os.path.isfile('tests/fixtures/.env_.bak'))
-
-        env_var_bak_file = subprocess.check_output(
-            ["grep PHP_VERSION tests/fixtures/.env_.bak "
-             "| awk -F= '{print $2}'"],
-            shell=True
-        ).decode('utf-8')
-
-        self.assertEqual(initial_value, env_var_bak_file.strip())
 
     def test_up(self):
         docker_compose = DockerCompose()
