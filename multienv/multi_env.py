@@ -106,7 +106,7 @@ class MultiEnv:
 
             # Create a backup of .env file and change the var value.
             subprocess.call(
-                ["sed -i .bak '/^"
+                ["sed -i.bak '/^"
                  + env_var.name + "/s/=.*$/="
                  + env_var.value + "/' " + self.config.dot_env_file()],
                 shell=True)

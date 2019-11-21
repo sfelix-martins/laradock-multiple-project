@@ -1,4 +1,5 @@
 import unittest
+import os
 import subprocess
 from mock import MagicMock
 
@@ -33,10 +34,24 @@ class MultiEnvTestCase(unittest.TestCase):
             self.assertEqual(env.value, str(7.2))
 
     def test_env_var_was_changed(self):
+        # Define vars to .env file
+        initial_value = str(5.6)
+        subprocess.call(
+            ["sed -i.bak '/^PHP_VERSION/s/=.*$/="
+             + initial_value + "/' tests/fixtures/env"],
+            shell=True
+        )
+
+        env_var_before_test = subprocess.check_output(
+            ["grep PHP_VERSION tests/fixtures/env | awk -F= '{print $2}'"],
+            shell=True
+        ).decode('utf-8')
+
+        self.assertEqual(initial_value, env_var_before_test.strip())
+
         config = Config(
-            dot_env='tests/fixtures/.env_',
-            env_var_container_build='tests/fixtures/'
-                                    'env_var_container_build.yml',
+            dot_env='tests/fixtures/env',
+            env_var_container_build='tests/fixtures/env_var_container_build.yml',
             projects='tests/fixtures/ValidProjects.yml'
         )
 
@@ -44,12 +59,39 @@ class MultiEnvTestCase(unittest.TestCase):
         multi_env.define_env()
 
         env_var = subprocess.check_output(
-            ["grep PHP_VERSION tests/fixtures/.env_ "
-             "| awk -F= '{print $2}'"],
+            ["grep PHP_VERSION tests/fixtures/env | awk -F= '{print $2}'"],
             shell=True
         ).decode('utf-8')
 
         self.assertEqual(str(7.2), env_var.strip())
+
+        # Assert created backup file with previous .env vars
+        self.assertTrue(os.path.isfile('tests/fixtures/env.bak'))
+
+        env_var_bak_file = subprocess.check_output(
+            ["grep PHP_VERSION tests/fixtures/env.bak | awk -F= '{print $2}'"],
+            shell=True
+        ).decode('utf-8')
+
+        self.assertEqual(initial_value, env_var_bak_file.strip())
+        #
+        # config = Config(
+        #     dot_env='tests/fixtures/env',
+        #     env_var_container_build='tests/fixtures/'
+        #                             'env_var_container_build.yml',
+        #     projects='tests/fixtures/ValidProjects.yml'
+        # )
+        #
+        # multi_env = MultiEnv('site_1', config)
+        # multi_env.define_env()
+        #
+        # env_var = subprocess.check_output(
+        #     ["grep PHP_VERSION tests/fixtures/env "
+        #      "| awk -F= '{print $2}'"],
+        #     shell=True
+        # ).decode('utf-8')
+        #
+        # self.assertEqual(str(7.2), env_var.strip())
 
     def test_up(self):
         docker_compose = DockerCompose()
@@ -58,7 +100,7 @@ class MultiEnvTestCase(unittest.TestCase):
         docker_compose.up = MagicMock()
 
         config = Config(
-            dot_env='tests/fixtures/.env_',
+            dot_env='tests/fixtures/env',
             env_var_container_build='tests/fixtures/'
                                     'env_var_container_build.yml',
             projects='tests/fixtures/ValidProjects.yml'
@@ -74,7 +116,7 @@ class MultiEnvTestCase(unittest.TestCase):
     def test_create_multi_env_with_docker_compose_invalid(self):
         with self.assertRaises(TypeError):
             config = Config(
-                dot_env='tests/fixtures/.env_',
+                dot_env='tests/fixtures/env',
                 env_var_container_build='tests/fixtures'
                                         '/env_var_container_build.yml',
                 projects='tests/fixtures/ValidProjects.yml'
@@ -85,7 +127,7 @@ class MultiEnvTestCase(unittest.TestCase):
     def test_define_projects_with_not_existent_project(self):
         with self.assertRaises(ProjectNotDefinedException):
             config = Config(
-                dot_env='tests/fixtures/.env_',
+                dot_env='tests/fixtures/env',
                 env_var_container_build='tests/fixtures'
                                         '/env_var_container_build.yml',
                 projects='tests/fixtures/ValidProjects.yml'
@@ -99,7 +141,7 @@ class MultiEnvTestCase(unittest.TestCase):
     def test_define_projects_without_services_defined(self):
         with self.assertRaises(ServicesNotDefinedException):
             config = Config(
-                dot_env='tests/fixtures/.env_',
+                dot_env='tests/fixtures/env',
                 env_var_container_build='tests/fixtures'
                                         '/env_var_container_build.yml',
                 projects='tests/fixtures/ValidProjects.yml'
@@ -110,7 +152,7 @@ class MultiEnvTestCase(unittest.TestCase):
     def test_define_projects_with_invalid_project_definitions_yaml_file(self):
         with self.assertRaises(InvalidYamlFileException):
             config = Config(
-                dot_env='tests/fixtures/.env_',
+                dot_env='tests/fixtures/env',
                 env_var_container_build='tests/fixtures'
                                         '/env_var_container_build.yml',
                 projects='tests/fixtures/InvalidProjects.yml'
@@ -121,7 +163,7 @@ class MultiEnvTestCase(unittest.TestCase):
     def test_define_projects_with_not_existent_config_file(self):
         with self.assertRaises(ConfigFileNotFoundException):
             config = Config(
-                dot_env='tests/fixtures/.env_',
+                dot_env='tests/fixtures/env',
                 env_var_container_build='tests/fixtures'
                                         '/env_var_container_build.yml',
                 projects='tests/fixtures/not_exists/ValidProjects.yml'
