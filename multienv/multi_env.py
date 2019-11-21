@@ -116,11 +116,13 @@ class MultiEnv:
 
         for env_var in self.changed_env_vars:
             for container in env_var.get_containers_to_rebuild():
-                self.docker_compose.build(container)
+                self.docker_compose.build(container).call()
 
-        self.docker_compose.down()
+        self.docker_compose.down().call()
 
-        self.docker_compose.up(self.project.get_services_names(), detached=True)
+        self.docker_compose\
+            .up(self.project.get_services_names(), detached=True)\
+            .call()
 
         return True
 
