@@ -173,4 +173,6 @@ class MultiEnv:
                     return var
 
     def execute(self):
-        return self.docker_compose.execute(['workspace', 'bash'], user='laradock')
+        return self.docker_compose\
+            .execute(['workspace', 'bash'], user='laradock')\
+            .call()
