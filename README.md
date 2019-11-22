@@ -1,4 +1,4 @@
-## Laradock Multiple Env
+## Laradock Multiple Project
 
 CLI application to helps the use of multiple projects on [Laradock](https://laradock.io).
 
