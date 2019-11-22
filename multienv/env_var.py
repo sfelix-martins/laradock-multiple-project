@@ -18,7 +18,10 @@ class EnvVar:
         try:
             with open(self.config.env_var_container_build_config(),
                       'r') as stream:
-                return self.get_containers_from_stream(stream)
+                containers = self.get_containers_from_stream(stream)
+                containers.sort()
+
+                return containers
 
         except IOError:
             raise EnvVarContainerBuildNotFoundException(
