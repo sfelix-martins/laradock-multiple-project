@@ -82,7 +82,7 @@ class MultiEnvTestCase(unittest.TestCase):
 
     def test_exec(self):
         docker_compose = DockerCompose()
-        docker_compose.exec = MagicMock()
+        docker_compose.execute = MagicMock()
 
         config = Config(
             dot_env='tests/fixtures/env',
