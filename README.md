@@ -1,6 +1,6 @@
 ## Laradock Multiple Env
 
-Script to helps the use of multiple projects on Laradock.
+CLI application to helps the use of multiple projects on [Laradock](https://laradock.io).
 
 ![](https://github.com/sfelix-martins/laradock-multiple-env/workflows/Python%20package/badge.svg)
 
@@ -14,8 +14,8 @@ Script to helps the use of multiple projects on Laradock.
 Clone the project inside laradock project folder and access the cloned folder:
 
 ```shell script
-git clone https://github.com/sfelix-martins/laradock-multiple-env.git multiple-env
-cd multiple-env
+git clone https://github.com/sfelix-martins/laradock-multiple-project.git multiple-project
+cd multiple-project
 ```
 
 Install the project dependencies from `requirements.txt`:
