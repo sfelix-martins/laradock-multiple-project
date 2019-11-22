@@ -60,9 +60,8 @@ After configure your projects on `Projects.yml` file you can execute the script
 Wait the process finish and your laradock should be started with your chosen
 project definitions.
 
-**WARNING:** Remember back to laradock root folder to execute other default docker commands. E.g:
+Call the `exec` command to access the `workspace` container:
 
 ```shell script
-cd ..
-docker-compose exec --user=laradock workspace bash
+./laradock exec laravel_project
 ```
