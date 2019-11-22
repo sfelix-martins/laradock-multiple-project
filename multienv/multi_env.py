@@ -30,7 +30,6 @@ def sed_inplace(filename, pattern, replace):
     with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_file:
         with open(filename) as src_file:
             for line in src_file:
-                print(pattern_compiled.sub(replace, line))
                 tmp_file.write(pattern_compiled.sub(replace, line))
 
     # Overwrite the original file with the munged temporary file in a
