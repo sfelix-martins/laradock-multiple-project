@@ -1,5 +1,4 @@
 import unittest
-import os
 import subprocess
 from mock import MagicMock
 
@@ -80,6 +79,20 @@ class MultiEnvTestCase(unittest.TestCase):
 
         multi_env = MultiEnv('site_1', config, docker_compose=docker_compose)
         self.assertTrue(multi_env.up())
+
+    def test_exec(self):
+        docker_compose = DockerCompose()
+        docker_compose.exec = MagicMock()
+
+        config = Config(
+            dot_env='tests/fixtures/env',
+            env_var_container_build='tests/fixtures/'
+                                    'env_var_container_build.yml',
+            projects='tests/fixtures/ValidProjects.yml'
+        )
+
+        multi_env = MultiEnv('site_1', config, docker_compose=docker_compose)
+        self.assertTrue(multi_env.exec())
 
     def test_create_multi_env_with_config_invalid(self):
         with self.assertRaises(TypeError):

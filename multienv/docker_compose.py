@@ -28,11 +28,20 @@ class DockerCompose:
 
         return self.mount(cmd_list)
 
+    def exec(self, containers, user=None):
+        cmd_list = ['exec']
+        if user:
+            cmd_list.append('--user=' + user)
+
+        cmd_list += containers
+
+        return self.mount(cmd_list)
+
     def call(self):
         if not self.cmd:
             raise RuntimeError('Command not defined')
 
-        subprocess.call([self.cmd], shell=True, cwd=self.cwd)
+        return subprocess.call([self.cmd], shell=True, cwd=self.cwd)
 
     def mount(self, params):
         self.cmd = mount([self.base_cmd] + params)

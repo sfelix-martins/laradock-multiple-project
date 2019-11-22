@@ -37,21 +37,25 @@ if not cmd:
           hint='The unique available command is "up". E.g.: laradock up '
                'project_name')
 
-if cmd != 'up':
+commands = ['up', 'exec']
+if cmd not in commands:
     abort(error='Invalid command "' + cmd + '"',
-          hint='The unique available command is "up". E.g.: laradock up '
-               'project_name')
+          hint='You must choose one of these: [' +
+               ', '.join(commands) + ']. E.g.: laradock up project_name')
 
 if not project_to_up:
     abort(error='The second param with the project name is required!')
 
 try:
-    config = Config(
-        dot_env='../.env',
-        env_var_container_build='config/env_var_containr_build.yml',
-        projects='Projects.yml')
+    config = Config(dot_env='../.env',
+                    env_var_container_build='config/env_var_containr_build.yml',
+                    projects='Projects.yml')
 
     multi_env = MultiEnv(project_to_up, config)
-    multi_env.up()
+    if cmd == 'up':
+        multi_env.up()
+    elif cmd == 'exec':
+        multi_env.exec()
+
 except HintMessageException as exc:
     abort(error=exc.error, hint=exc.hint)

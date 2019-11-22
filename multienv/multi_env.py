@@ -171,3 +171,6 @@ class MultiEnv:
                 name, var = line.partition("=")[::2]
                 if name == var_name:
                     return var
+
+    def exec(self):
+        return self.docker_compose.exec(['workspace', 'bash'], user='laradock')

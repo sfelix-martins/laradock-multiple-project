@@ -30,6 +30,19 @@ class DockerComposeTestCase(unittest.TestCase):
 
         self.assertEqual('docker-compose up -d apache mysql mailhog', dc.cmd)
 
+    def test_exec_cmd_with_user(self):
+        dc = DockerCompose()
+        dc.exec(['workspace', 'bash'], user='laradock')
+
+        self.assertEqual('docker-compose exec --user=laradock workspace bash',
+                         dc.cmd)
+
+    def test_exec_cmd_without_user(self):
+        dc = DockerCompose()
+        dc.exec(['workspace', 'bash'])
+
+        self.assertEqual('docker-compose exec workspace bash', dc.cmd)
+
     def test_call_cmd_without_mount(self):
         with self.assertRaises(RuntimeError):
             dc = DockerCompose()
