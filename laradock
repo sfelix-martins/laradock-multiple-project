@@ -5,24 +5,7 @@ import sys
 from multienv.exceptions import HintMessageException
 from multienv.multi_env import MultiEnv
 from multienv.config import Config
-import re
 
-
-# old_value = subprocess.check_output(
-#                 ["grep " + env_var.name + " "
-#                  + self.config.dot_env_file()
-#                  + " | awk -F= '{print $2}'"],
-#                 shell=True
-#             ).decode('utf-8')
-
-with open('.env') as origin_file:
-    var_name = 'GEARMAN_MYSQL_TABLE'
-    for line in origin_file:
-        name, var = line.partition("=")[::2]
-        if name == var_name:
-            print(var)
-
-exit()
 
 def abort(error, hint=''):
     """
