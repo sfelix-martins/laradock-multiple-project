@@ -65,34 +65,6 @@ class MultiEnvTestCase(unittest.TestCase):
 
         self.assertEqual(str(7.2), env_var.strip())
 
-        # Assert created backup file with previous .env vars
-        self.assertTrue(os.path.isfile('tests/fixtures/env.bak'))
-
-        env_var_bak_file = subprocess.check_output(
-            ["grep PHP_VERSION tests/fixtures/env.bak | awk -F= '{print $2}'"],
-            shell=True
-        ).decode('utf-8')
-
-        self.assertEqual(initial_value, env_var_bak_file.strip())
-        #
-        # config = Config(
-        #     dot_env='tests/fixtures/env',
-        #     env_var_container_build='tests/fixtures/'
-        #                             'env_var_container_build.yml',
-        #     projects='tests/fixtures/ValidProjects.yml'
-        # )
-        #
-        # multi_env = MultiEnv('site_1', config)
-        # multi_env.define_env()
-        #
-        # env_var = subprocess.check_output(
-        #     ["grep PHP_VERSION tests/fixtures/env "
-        #      "| awk -F= '{print $2}'"],
-        #     shell=True
-        # ).decode('utf-8')
-        #
-        # self.assertEqual(str(7.2), env_var.strip())
-
     def test_up(self):
         docker_compose = DockerCompose()
         docker_compose.down = MagicMock()

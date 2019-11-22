@@ -1,5 +1,7 @@
 import yaml
-import subprocess
+import re
+import shutil
+import tempfile
 
 from multienv.docker_compose import DockerCompose
 from multienv.env_var import EnvVar
@@ -9,6 +11,32 @@ from multienv.exceptions import ProjectNotDefinedException, \
 from multienv.project import Project
 from multienv.service import Service
 from multienv.config import Config
+
+
+def sed_inplace(filename, pattern, replace):
+    """
+    Perform the pure-Python equivalent of in-place `sed` substitution: e.g.,
+    `sed -i -e 's/'${pattern}'/'${repl}' "${filename}"`.
+
+    Thanks: https://stackoverflow.com/a/31499114/7491725
+    """
+    # For efficiency, precompile the passed regular expression.
+    pattern_compiled = re.compile(pattern)
+
+    # For portability, NamedTemporaryFile() defaults to mode "w+b" (i.e., binary
+    # writing with updating). This is usually a good thing. In this case,
+    # however, binary writing imposes non-trivial encoding constraints trivially
+    # resolved by switching to text writing. Let's do that.
+    with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_file:
+        with open(filename) as src_file:
+            for line in src_file:
+                print(pattern_compiled.sub(replace, line))
+                tmp_file.write(pattern_compiled.sub(replace, line))
+
+    # Overwrite the original file with the munged temporary file in a
+    # manner preserving file attributes (e.g., permissions).
+    shutil.copystat(filename, tmp_file.name)
+    shutil.move(tmp_file.name, filename)
 
 
 class MultiEnv:
@@ -93,23 +121,17 @@ class MultiEnv:
     def define_env(self):
         for env_var in self.project.env_vars:
             # Get the var old value in .env file
-            old_value = subprocess.check_output(
-                ["grep " + env_var.name + " "
-                 + self.config.dot_env_file()
-                 + " | awk -F= '{print $2}'"],
-                shell=True
-            ).decode('utf-8')
+            old_value = self.get_env_var_value(env_var.name)
 
             # Check if the key exists with the same value
             if old_value.strip() != env_var.value:
                 self.changed_env_vars.append(env_var)
 
-            # Create a backup of .env file and change the var value.
-            subprocess.call(
-                ["sed -i.bak '/^"
-                 + env_var.name + "/s/=.*$/="
-                 + env_var.value + "/' " + self.config.dot_env_file()],
-                shell=True)
+            # Change the var value.
+            sed_inplace(
+                self.config.dot_env_file(),
+                r'^' + env_var.name + '=.*$',
+                env_var.name + '=' + env_var.value)
 
     def up(self):
         self.define_env()
@@ -143,3 +165,10 @@ class MultiEnv:
         except yaml.YAMLError:
             raise InvalidYamlFileException(
                 error='Error parsing project definitions file')
+
+    def get_env_var_value(self, var_name):
+        with open(self.config.dot_env_file()) as origin_file:
+            for line in origin_file:
+                name, var = line.partition("=")[::2]
+                if name == var_name:
+                    return var
