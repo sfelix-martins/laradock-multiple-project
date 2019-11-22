@@ -55,7 +55,7 @@ try:
     if cmd == 'up':
         multi_env.up()
     elif cmd == 'exec':
-        multi_env.exec()
+        multi_env.execute()
 
 except HintMessageException as exc:
     abort(error=exc.error, hint=exc.hint)

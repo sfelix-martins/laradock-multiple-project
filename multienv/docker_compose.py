@@ -28,7 +28,7 @@ class DockerCompose:
 
         return self.mount(cmd_list)
 
-    def exec(self, containers, user=None):
+    def execute(self, containers, user=None):
         cmd_list = ['exec']
         if user:
             cmd_list.append('--user=' + user)

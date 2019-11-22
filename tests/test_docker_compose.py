@@ -32,14 +32,14 @@ class DockerComposeTestCase(unittest.TestCase):
 
     def test_exec_cmd_with_user(self):
         dc = DockerCompose()
-        dc.exec(['workspace', 'bash'], user='laradock')
+        dc.execute(['workspace', 'bash'], user='laradock')
 
         self.assertEqual('docker-compose exec --user=laradock workspace bash',
                          dc.cmd)
 
     def test_exec_cmd_without_user(self):
         dc = DockerCompose()
-        dc.exec(['workspace', 'bash'])
+        dc.execute(['workspace', 'bash'])
 
         self.assertEqual('docker-compose exec workspace bash', dc.cmd)
 

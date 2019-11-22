@@ -92,7 +92,7 @@ class MultiEnvTestCase(unittest.TestCase):
         )
 
         multi_env = MultiEnv('site_1', config, docker_compose=docker_compose)
-        self.assertTrue(multi_env.exec())
+        self.assertTrue(multi_env.execute())
 
     def test_create_multi_env_with_config_invalid(self):
         with self.assertRaises(TypeError):
