@@ -87,7 +87,11 @@ The `name` are the site domain.
 The `root` are the folder that contains your site code.
 
 The `template` are the example `.conf.example` file that will be used to create the server configs. 
-The default template is `laravel`.  
+
+For the `nginx` services you can choose between `laravel`, `symfony` and `default`. 
+The default template is `laravel`.
+
+For `apache2` and `caddy` exists just one template.
  
 E.g.: If your folder structure look like this:   
 
