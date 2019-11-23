@@ -93,7 +93,7 @@ After configure your projects on `Projects.yml` file you can execute the script
 `laradock` passing the project name on first param:
 
 ```shell script
-./laradock up laravel_project``
+./laradock up laravel_project
 ```
 
 Wait the process finish and your laradock should be started with your chosen
