@@ -38,27 +38,56 @@ Set your projects configs on `Projects.yml` file.
 ```yaml
 # Project name
 laravel_project:
-  # Environment vars that will override the `.env` vars from laradock
-  env:
-    - PHP_VERSION: 7.3
   # The containers that will be executed
   services:
     - nginx
     - mysql
     - mailhog
+  # Environment vars that will override the `.env` vars from laradock
+  env:
+    - PHP_VERSION: 7.3
   # The server definitions to point domain to folder
   server:
     name: laravelproject.test
     root: Projects/laravel/laravelproject.test/public
+    template: laravel
+
+laravel_api:
+  # The containers that will be executed
+  services:
+    - apache2
+    - postgres
+    - maildev
+    - redis
+  # Environment vars that will override the `.env` vars from laradock
+  env:
+    - PHP_VERSION: 7.3
+  # The server definitions to point domain to folder
+  server:
+    name: laravel_api.test
+    root: Projects/laravel/laravel_api.test/public
 ```
 
-### Server Definitions
+### Services (Required)
 
-On server config section you must define the server `name` and `root`.
+The containers that will be executed. You must defined at least one service
+
+### Env (Optional)
+
+Define the environment variables to each specific project. 
+If no one variable was defined the default `.env` file from laradock will be
+used to up environment. 
+
+### Server Definitions (Optional)
+
+On server config section you must define the server `name`, `root` and `template` (Optional).
 
 The `name` are the site domain.
 
 The `root` are the folder that contains your site code.
+
+The `template` are the example `.conf.example` file that will be used to create the server configs. 
+The default template is `laravel`.  
  
 E.g.: If your folder structure look like this:   
 

@@ -23,7 +23,7 @@ class WebServer:
         self.laradock_root_folder = laradock_root_folder
 
     @abc.abstractmethod
-    def create_domain(self, template=None):
+    def create_domain(self):
         """
         Create a domain on service laradock folder
 

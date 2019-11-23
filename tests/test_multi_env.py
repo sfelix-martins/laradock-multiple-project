@@ -22,10 +22,11 @@ class MultiEnvTestCase(unittest.TestCase):
         if not_found_project:
             projects_file = 'NotFound.yml'
 
+        env_container = self.fixtures_folder + '/env_var_container_build.yml '
+
         return Config(
             dot_env=self.fixtures_folder + '/env',
-            env_var_container_build=
-            self.fixtures_folder + '/env_var_container_build.yml',
+            env_var_container_build=env_container,
             projects=self.fixtures_folder + '/' + projects_file,
             laradock_root_folder=self.fixtures_folder + '/laradock'
         )
@@ -58,6 +59,20 @@ class MultiEnvTestCase(unittest.TestCase):
         for env in multi_env.project.env_vars:
             self.assertEqual(env.name, 'PHP_VERSION')
             self.assertEqual(env.value, str(7.2))
+
+        # Assert defined the correct web server based on services
+        self.assertEqual(multi_env.project.web_server, None)
+
+    def test_defined_project_without_env_vars(self):
+        multi_env = MultiEnv('site_without_env', self.config())
+
+        self.assertEqual(multi_env.project_name, 'site_without_env')
+        self.assertEqual(multi_env.project.name, 'site_without_env')
+
+        for service in multi_env.project.services:
+            self.assertIn(service.name, ['nginx', 'mysql'])
+
+        self.assertEqual([], multi_env.project.env_vars)
 
         # Assert defined the correct web server based on services
         self.assertEqual(multi_env.project.web_server, None)
@@ -124,7 +139,9 @@ class MultiEnvTestCase(unittest.TestCase):
 
     def test_create_multi_env_with_docker_compose_invalid(self):
         with self.assertRaises(TypeError):
-            MultiEnv('not_existent_project', self.config(), docker_compose='test')
+            MultiEnv('not_existent_project',
+                     self.config(),
+                     docker_compose='test')
 
     def test_define_projects_with_not_existent_project(self):
         with self.assertRaises(ProjectNotDefinedException):
@@ -136,11 +153,12 @@ class MultiEnvTestCase(unittest.TestCase):
 
     def test_define_projects_with_invalid_project_definitions_yaml_file(self):
         with self.assertRaises(InvalidYamlFileException):
-            MultiEnv('site_without_services', self.config(invalid=True))
+            MultiEnv('site_1', self.config(invalid=True))
 
     def test_define_projects_with_not_existent_config_file(self):
         with self.assertRaises(ConfigFileNotFoundException):
-            MultiEnv('site_without_services', self.config(not_found_project=True))
+            MultiEnv('site_without_services',
+                     self.config(not_found_project=True))
 
 
 if __name__ == '__main__':

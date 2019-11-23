@@ -1,13 +1,18 @@
 import shutil
 
-from multienv.web_servers.nginx.domain.templates.templatefactory import \
+from multienv.web_servers.nginx.domain.templates.template_factory import \
     TemplateFactory
 from multienv.web_servers.web_server import WebServer
 
 
 class Nginx(WebServer):
-    def create_domain(self, template='laravel'):
-        template_instance = TemplateFactory(template).create()
+    def create_domain(self):
+        template = self.definitions.template
+
+        template_instance = TemplateFactory(template).create(
+            name=self.definitions.name,
+            root=self.definitions.root
+        )
 
         site = self.definitions.name
 
@@ -20,6 +25,4 @@ class Nginx(WebServer):
         shutil.copyfile(source, destination)
 
         # Replace template configs
-        template_instance.replace_content(destination,
-                                          site,
-                                          self.definitions.root)
+        template_instance.replace_content(destination)

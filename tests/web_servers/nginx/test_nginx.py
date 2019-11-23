@@ -14,7 +14,25 @@ class NginxTestCase(unittest.TestCase):
 
         nginx = Nginx(definitions,
                       laradock_root_folder=self.fixtures_folder + '/laradock')
-        nginx.create_domain(template='laravel')
+        nginx.create_domain()
+
+        site_config_file = self.fixtures_folder + '/laradock/nginx/sites' \
+                                                  '/smartins.com.conf'
+
+        # Assert the site config file exists
+        self.assertTrue(os.path.isfile(site_config_file))
+
+        # Clear tests side effects
+        os.remove(site_config_file)
+
+    def test_create_domain_config_file_passing_the_template(self):
+        definitions = WebServerDefinitions(name='smartins.com',
+                                           root='Projects/sites/smartins.com',
+                                           template='laravel')
+
+        nginx = Nginx(definitions,
+                      laradock_root_folder=self.fixtures_folder + '/laradock')
+        nginx.create_domain()
 
         site_config_file = self.fixtures_folder + '/laradock/nginx/sites' \
                                                   '/smartins.com.conf'

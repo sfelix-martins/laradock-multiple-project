@@ -19,6 +19,11 @@ site_without_services:
   env:
     - PHP_VERSION: 7.2
 
+site_without_env:
+  services:
+    - nginx
+    - mysql
+
 site_with_wrong_server:
   env:
     - PHP_VERSION: 7.2

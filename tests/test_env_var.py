@@ -35,7 +35,8 @@ class EnvVarTestCase(unittest.TestCase):
     def test_get_containers_to_rebuild_with_not_existent_config(self):
         with self.assertRaises(EnvVarContainerBuildNotFoundException):
             config = Config(
-                env_var_container_build='not_found/env_var_container_build.yml')
+                env_var_container_build='not_found/'
+                                        'env_var_container_build.yml')
             env_var = EnvVar('MYSQL_VERSION', 5.7, config)
             env_var.get_containers_to_rebuild()
 

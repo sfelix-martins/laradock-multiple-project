@@ -18,7 +18,8 @@ class WebServerFactoryTestCase(unittest.TestCase):
         }
 
         web_server = WebServerFactory('nginx')\
-            .create(definitions, laradock_root_folder='tests/fixtures/laradock')
+            .create(definitions,
+                    laradock_root_folder='tests/fixtures/laradock')
         self.assertIsInstance(web_server, WebServer)
         self.assertIsInstance(web_server, Nginx)
 

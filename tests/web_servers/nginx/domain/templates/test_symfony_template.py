@@ -2,23 +2,22 @@ import unittest
 import shutil
 import os
 
-from multienv.web_servers.nginx.domain.templates.laraveltemplate import \
-    LaravelTemplate
+from multienv.web_servers.nginx.domain.templates.symfony_template import \
+    SymfonyTemplate
 
 
-class LaravelTemplateTestCase(unittest.TestCase):
+class SymfonyTemplateTestCase(unittest.TestCase):
     fixtures_folder = 'tests/fixtures/'
 
     def test_replace_content(self):
         filename = self.fixtures_folder + \
-                   'laradock/nginx/sites/laravel.conf.example'
+                   'laradock/nginx/sites/symfony.conf.example'
         site = 'test.com'
-        root = 'Project/test.com/public'
+        root = 'Project/test.com/web'
 
         test_filename = shutil.copyfile(filename, filename + '.test')
 
-        laravel = LaravelTemplate()
-        laravel.replace_content(test_filename, site, root)
+        SymfonyTemplate(site, root).replace_content(test_filename)
 
         server_name = ''
         root_folder = ''
@@ -26,8 +25,7 @@ class LaravelTemplateTestCase(unittest.TestCase):
             for line in src_file:
                 if 'server_name' in line:
                     server_name = line.partition('server_name')[2]
-                if 'root /var/www/' in line and \
-                        '/var/www/letsencrypt/;' not in line:
+                if 'root /var/www/' in line:
                     root_folder = line.partition('root')[2]
 
         self.assertEqual(site + ';', server_name.strip())

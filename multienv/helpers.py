@@ -13,10 +13,10 @@ def sed_inplace(filename, pattern, replace):
     # For efficiency, precompile the passed regular expression.
     pattern_compiled = re.compile(pattern)
 
-    # For portability, NamedTemporaryFile() defaults to mode "w+b" (i.e., binary
-    # writing with updating). This is usually a good thing. In this case,
-    # however, binary writing imposes non-trivial encoding constraints trivially
-    # resolved by switching to text writing. Let's do that.
+    # For portability, NamedTemporaryFile() defaults to mode "w+b" (i.e.,
+    # binary  writing with updating). This is usually a good thing. In this
+    # case, however, binary writing imposes non-trivial encoding constraints
+    # trivially resolved by switching to text writing. Let's do that.
     with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_file:
         with open(filename) as src_file:
             for line in src_file:

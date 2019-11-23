@@ -1,4 +1,3 @@
-from multienv.config import Config
 from multienv.exceptions import InvalidArgumentException, \
     InvalidProjectDefinitions
 from multienv.web_servers.nginx.nginx import Nginx
