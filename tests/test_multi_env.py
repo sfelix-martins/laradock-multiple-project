@@ -22,7 +22,7 @@ class MultiEnvTestCase(unittest.TestCase):
         if not_found_project:
             projects_file = 'NotFound.yml'
 
-        env_container = self.fixtures_folder + '/env_var_container_build.yml '
+        env_container = self.fixtures_folder + '/env_var_container_build.yml'
 
         return Config(
             dot_env=self.fixtures_folder + '/env',
