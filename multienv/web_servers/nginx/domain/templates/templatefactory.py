@@ -1,4 +1,4 @@
-from multienv.webservers.nginx.domain.templates.laraveltemplate import \
+from multienv.web_servers.nginx.domain.templates.laraveltemplate import \
     LaravelTemplate
 
 

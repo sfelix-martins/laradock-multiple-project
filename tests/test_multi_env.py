@@ -8,7 +8,7 @@ from multienv.exceptions import ProjectNotDefinedException, \
     ConfigFileNotFoundException, InvalidProjectDefinitions
 from multienv.multi_env import MultiEnv
 from multienv.config import Config
-from multienv.webservers.nginx.nginx import Nginx
+from multienv.web_servers.nginx.nginx import Nginx
 
 
 class MultiEnvTestCase(unittest.TestCase):

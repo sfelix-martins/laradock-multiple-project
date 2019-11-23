@@ -1,8 +1,8 @@
 import unittest
 
-from multienv.webservers.nginx.domain.templates.laraveltemplate import \
+from multienv.web_servers.nginx.domain.templates.laraveltemplate import \
     LaravelTemplate
-from multienv.webservers.nginx.domain.templates.templatefactory import \
+from multienv.web_servers.nginx.domain.templates.templatefactory import \
     TemplateFactory
 
 

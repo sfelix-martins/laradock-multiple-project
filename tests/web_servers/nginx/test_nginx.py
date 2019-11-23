@@ -1,8 +1,8 @@
 import unittest
 import os
 
-from multienv.webservers.nginx.nginx import Nginx
-from multienv.webservers.web_server_definitions import WebServerDefinitions
+from multienv.web_servers.nginx.nginx import Nginx
+from multienv.web_servers.web_server_definitions import WebServerDefinitions
 
 
 class NginxTestCase(unittest.TestCase):

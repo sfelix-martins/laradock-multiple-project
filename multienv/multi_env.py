@@ -9,8 +9,8 @@ from multienv.helpers import sed_inplace
 from multienv.project import Project
 from multienv.service import Service
 from multienv.config import Config
-from multienv.webservers.web_server_factory import WebServerFactory
-from multienv.webservers.webserver import WebServer
+from multienv.web_servers.web_server_factory import WebServerFactory
+from multienv.web_servers.web_server import WebServer
 
 
 class MultiEnv:

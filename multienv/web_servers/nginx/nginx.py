@@ -1,8 +1,8 @@
 import shutil
 
-from multienv.webservers.nginx.domain.templates.templatefactory import \
+from multienv.web_servers.nginx.domain.templates.templatefactory import \
     TemplateFactory
-from multienv.webservers.webserver import WebServer
+from multienv.web_servers.web_server import WebServer
 
 
 class Nginx(WebServer):

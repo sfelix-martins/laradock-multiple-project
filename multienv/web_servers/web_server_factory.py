@@ -1,9 +1,9 @@
 from multienv.config import Config
 from multienv.exceptions import InvalidArgumentException, \
     InvalidProjectDefinitions
-from multienv.webservers.nginx.nginx import Nginx
-from multienv.webservers.web_server_definitions import WebServerDefinitions
-from multienv.webservers.webserver import WebServer
+from multienv.web_servers.nginx.nginx import Nginx
+from multienv.web_servers.web_server_definitions import WebServerDefinitions
+from multienv.web_servers.web_server import WebServer
 
 
 class WebServerFactory:

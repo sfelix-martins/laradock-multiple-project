@@ -1,10 +1,10 @@
 import abc
 
 from multienv.exceptions import InvalidArgumentException
-from multienv.webservers.web_server_definitions import WebServerDefinitions
+from multienv.web_servers.web_server_definitions import WebServerDefinitions
 
 
-class WebServer(abc.ABC):
+class WebServer:
     available_web_servers = [
         'nginx',
         'apache2',
