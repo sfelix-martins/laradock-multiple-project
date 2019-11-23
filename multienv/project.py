@@ -2,6 +2,7 @@ class Project:
     name = None
     env_vars = []
     services = []
+    web_server = None
 
     def __init__(self, name, env_vars, services):
         self.name = name
@@ -14,3 +15,7 @@ class Project:
             services_names.append(service.name)
 
         return services_names
+
+    def set_web_server(self, web_server):
+        self.web_server = web_server
+        return self

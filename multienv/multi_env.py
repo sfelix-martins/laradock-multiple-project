@@ -1,41 +1,16 @@
 import yaml
-import re
-import shutil
-import tempfile
 
 from multienv.docker_compose import DockerCompose
 from multienv.env_var import EnvVar
 from multienv.exceptions import ProjectNotDefinedException, \
     ServicesNotDefinedException, InvalidYamlFileException, \
-    ConfigFileNotFoundException
+    ConfigFileNotFoundException, InvalidProjectDefinitions
+from multienv.helpers import sed_inplace
 from multienv.project import Project
 from multienv.service import Service
 from multienv.config import Config
-
-
-def sed_inplace(filename, pattern, replace):
-    """
-    Perform the pure-Python equivalent of in-place `sed` substitution: e.g.,
-    `sed -i -e 's/'${pattern}'/'${repl}' "${filename}"`.
-
-    Thanks: https://stackoverflow.com/a/31499114/7491725
-    """
-    # For efficiency, precompile the passed regular expression.
-    pattern_compiled = re.compile(pattern)
-
-    # For portability, NamedTemporaryFile() defaults to mode "w+b" (i.e., binary
-    # writing with updating). This is usually a good thing. In this case,
-    # however, binary writing imposes non-trivial encoding constraints trivially
-    # resolved by switching to text writing. Let's do that.
-    with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_file:
-        with open(filename) as src_file:
-            for line in src_file:
-                tmp_file.write(pattern_compiled.sub(replace, line))
-
-    # Overwrite the original file with the munged temporary file in a
-    # manner preserving file attributes (e.g., permissions).
-    shutil.copystat(filename, tmp_file.name)
-    shutil.move(tmp_file.name, filename)
+from multienv.webservers.web_server_factory import WebServerFactory
+from multienv.webservers.webserver import WebServer
 
 
 class MultiEnv:
@@ -45,7 +20,7 @@ class MultiEnv:
     docker_compose = None
     config = None
 
-    def __init__(self, project_name, config, docker_compose=None):
+    def __init__(self, project_name, config, docker_compose=None,):
         self.project_name = project_name
         if not isinstance(config, Config):
             raise TypeError('The param config must be an instance of Config '
@@ -68,10 +43,16 @@ class MultiEnv:
                 env_vars = self.get_defined_env_vars(project_definition)
                 services = self.get_defined_services(project_definition)
 
-                self.project = Project(
-                    self.project_name,
-                    env_vars,
-                    services)
+                self.project = Project(self.project_name,
+                                       env_vars,
+                                       services)
+
+                server_service = self.get_defined_server_service(services)
+                if server_service:
+                    web_server = self.get_defined_server(project_definition,
+                                                         server_service)
+                    self.project.set_web_server(web_server)
+
         except IOError:
             raise ConfigFileNotFoundException(
                 error='Config file not found!',
@@ -89,6 +70,14 @@ class MultiEnv:
                 env_vars.append(EnvVar(key, value, self.config))
 
         return env_vars
+
+    def get_defined_server(self, project_definition, server_service):
+        defined_server = project_definition.get('server')
+        if not defined_server:
+            return
+
+        return WebServerFactory(server_service)\
+            .create(defined_server, self.config.get_laradock_root_folder())
 
     def get_defined_services(self, project_definition):
         defined_services = project_definition.get('services')
@@ -127,13 +116,13 @@ class MultiEnv:
                 self.changed_env_vars.append(env_var)
 
             # Change the var value.
-            sed_inplace(
-                self.config.dot_env_file(),
-                r'^' + env_var.name + '=.*$',
-                env_var.name + '=' + env_var.value)
+            sed_inplace(self.config.dot_env_file(),
+                        r'^' + env_var.name + '=.*$',
+                        env_var.name + '=' + env_var.value)
 
     def up(self):
         self.define_env()
+        self.define_web_server()
 
         for env_var in self.changed_env_vars:
             for container in env_var.get_containers_to_rebuild():
@@ -176,3 +165,27 @@ class MultiEnv:
         return self.docker_compose\
             .execute(['workspace', 'bash'], user='laradock')\
             .call()
+
+    def get_defined_server_service(self, services):
+        server_services = []
+        for service in services:
+            if service.name in WebServer.available_web_servers:
+                server_services.append(service.name)
+
+        if len(server_services) == 0:
+            return None
+
+        if len(server_services) > 1:
+            raise InvalidProjectDefinitions(
+                error='More than one "server" service is defined',
+                hint='You must choose between one of these: [' +
+                     ', '.join(WebServer.available_web_servers) + ']'
+            )
+
+        return server_services[0]
+
+    def define_web_server(self):
+        if not self.project.web_server:
+            return
+
+        self.project.web_server.create_domain()
