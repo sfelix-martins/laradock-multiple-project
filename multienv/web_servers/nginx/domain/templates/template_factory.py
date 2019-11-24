@@ -1,3 +1,5 @@
+from multienv.web_servers.nginx.domain.templates.default_template import \
+    DefaultTemplate
 from multienv.web_servers.nginx.domain.templates.laravel_template import \
     LaravelTemplate
 from multienv.web_servers.nginx.domain.templates.symfony_template import \
@@ -16,5 +18,8 @@ class TemplateFactory:
 
         if self.template == 'symfony':
             return SymfonyTemplate(name, root)
+
+        if self.template == 'default':
+            return DefaultTemplate(name, root)
 
         raise AttributeError

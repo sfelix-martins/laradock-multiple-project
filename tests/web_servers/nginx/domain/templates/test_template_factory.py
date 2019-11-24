@@ -1,5 +1,7 @@
 import unittest
 
+from multienv.web_servers.nginx.domain.templates.default_template import \
+    DefaultTemplate
 from multienv.web_servers.nginx.domain.templates.laravel_template import \
     LaravelTemplate
 from multienv.web_servers.nginx.domain.templates.symfony_template import \
@@ -23,6 +25,13 @@ class TemplateFactoryTestCase(unittest.TestCase):
         instance = factory.create('smartins.com', 'Projects/smartins.com')
 
         self.assertIsInstance(instance, SymfonyTemplate)
+
+    def test_create_for_default_template(self):
+        factory = TemplateFactory('default')
+
+        instance = factory.create('smartins.com', 'Projects/smartins.com')
+
+        self.assertIsInstance(instance, DefaultTemplate)
 
     def test_try_create_for_not_existent_template(self):
         with self.assertRaises(AttributeError):
