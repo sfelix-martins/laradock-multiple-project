@@ -6,7 +6,7 @@ Script to helps the use of multiple projects on Laradock.
 
 ## Pre-requisites
 
-- Python >= 2.7
+- Python >= 3.0
 - [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation)
 
 ## Installation
