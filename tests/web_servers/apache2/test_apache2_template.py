@@ -2,10 +2,10 @@ import unittest
 import shutil
 import os
 
-from multienv.web_servers.apache2.domain.templates.template import Template
+from multienv.web_servers.apache2.apache2_template import Apache2Template
 
 
-class TemplateTestCase(unittest.TestCase):
+class Apache2TemplateTestCase(unittest.TestCase):
     fixtures_folder = 'tests/fixtures/'
 
     def test_replace_content(self):
@@ -16,7 +16,7 @@ class TemplateTestCase(unittest.TestCase):
 
         test_filename = shutil.copyfile(filename, filename + '.test')
 
-        template = Template(site, root)
+        template = Apache2Template(site, root)
         template.replace_content(test_filename)
 
         server_name = ''

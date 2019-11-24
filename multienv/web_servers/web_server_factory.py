@@ -1,6 +1,7 @@
 from multienv.exceptions import InvalidArgumentException, \
     InvalidProjectDefinitions
 from multienv.web_servers.apache2.apache2 import Apache2
+from multienv.web_servers.caddy.caddy import Caddy
 from multienv.web_servers.nginx.nginx import Nginx
 from multienv.web_servers.web_server_definitions import WebServerDefinitions
 from multienv.web_servers.web_server import WebServer
@@ -38,5 +39,9 @@ class WebServerFactory:
         if self.name == 'apache2':
             return Apache2(definitions=server_definitions,
                            laradock_root_folder=laradock_root_folder)
+
+        if self.name == 'caddy':
+            return Caddy(definitions=server_definitions,
+                         laradock_root_folder=laradock_root_folder)
 
         return

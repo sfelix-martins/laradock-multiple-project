@@ -1,7 +1,7 @@
 from multienv.helpers import sed_inplace
 
 
-class Template:
+class Apache2Template:
     def __init__(self, site, root):
         """
        Create an instance of the template.
