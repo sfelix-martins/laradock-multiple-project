@@ -49,7 +49,8 @@ if not project_to_up:
 try:
     config = Config(dot_env='../.env',
                     env_var_container_build='config/env_var_containr_build.yml',
-                    projects='Projects.yml')
+                    projects='Projects.yml',
+                    laradock_root_folder='..')
 
     multi_env = MultiEnv(project_to_up, config)
     if cmd == 'up':

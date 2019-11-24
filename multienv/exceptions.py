@@ -7,6 +7,10 @@ class HintMessageException(Exception):
         self.hint = hint
 
 
+class InvalidArgumentException(HintMessageException):
+    pass
+
+
 class ProjectNotDefinedException(HintMessageException):
     pass
 
@@ -16,6 +20,10 @@ class ServicesNotDefinedException(HintMessageException):
 
 
 class InvalidYamlFileException(HintMessageException):
+    pass
+
+
+class InvalidProjectDefinitions(HintMessageException):
     pass
 
 

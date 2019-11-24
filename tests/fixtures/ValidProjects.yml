@@ -4,7 +4,59 @@ site_1:
   services:
     - nginx
     - mysql
+  server:
+    name: siteone.test
+    root: Desktop/projects/siteone/public
+
+site_caddy:
+  env:
+    - PHP_VERSION: 7.2
+  services:
+    - caddy
+    - mysql
+  server:
+    name: siteone.test
+    root: Desktop/projects/siteone/public
+
+site_apache2:
+  env:
+    - PHP_VERSION: 7.2
+  services:
+    - apache2
+    - mysql
+  server:
+    name: siteone.test
+    root: Desktop/projects/siteone/public
+
+site_without_server:
+  env:
+    - PHP_VERSION: 7.2
+  services:
+    - nginx
+    - mysql
 
 site_without_services:
   env:
     - PHP_VERSION: 7.2
+
+site_without_env:
+  services:
+    - nginx
+    - mysql
+
+site_with_wrong_server:
+  env:
+    - PHP_VERSION: 7.2
+  services:
+    - nginx
+    - mysql
+  server:
+    name: siteone.test
+
+site_with_more_than_one_server:
+  env:
+    - PHP_VERSION: 7.2
+  services:
+    - nginx
+    - mysql
+    - apache2
