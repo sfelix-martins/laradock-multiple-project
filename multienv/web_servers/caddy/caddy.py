@@ -15,7 +15,7 @@ class Caddy(WebServer):
         source = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                               'Caddyfile'))
 
-        destination = self.laradock_root_folder + '/caddy/Caddyfile'
+        destination = self.laradock_root_folder + '/caddy/caddy/Caddyfile'
 
         shutil.copyfile(source, destination)
 

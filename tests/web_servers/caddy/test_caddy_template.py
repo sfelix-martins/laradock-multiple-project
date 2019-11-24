@@ -10,7 +10,7 @@ class CaddyTemplateTestCase(unittest.TestCase):
 
     def test_replace_content(self):
         filename = self.fixtures_folder + \
-                   'laradock/caddy/Caddyfile'
+                   'laradock/caddy/caddy/Caddyfile'
         shutil.copyfile('multienv/web_servers/caddy/Caddyfile', filename)
 
         site = 'test.com'
@@ -44,7 +44,7 @@ class CaddyTemplateTestCase(unittest.TestCase):
 
     def test_replace_content_with_https(self):
         filename = self.fixtures_folder + \
-                   'laradock/caddy/Caddyfile'
+                   'laradock/caddy/caddy/Caddyfile'
         shutil.copyfile('multienv/web_servers/caddy/Caddyfile', filename)
 
         site = 'test.com'

@@ -17,7 +17,8 @@ class CaddyTestCase(unittest.TestCase):
                       laradock_root_folder=self.fixtures_folder + '/laradock')
         caddy.create_domain()
 
-        site_config_file = self.fixtures_folder + '/laradock/caddy/Caddyfile'
+        site_config_file = self.fixtures_folder + '/laradock/caddy/caddy' \
+                                                  '/Caddyfile'
 
         # Assert the site config file exists
         self.assertTrue(os.path.isfile(site_config_file))
@@ -49,7 +50,8 @@ class CaddyTestCase(unittest.TestCase):
                       laradock_root_folder=self.fixtures_folder + '/laradock')
         caddy.create_domain()
 
-        site_config_file = self.fixtures_folder + '/laradock/caddy/Caddyfile'
+        site_config_file = self.fixtures_folder + '/laradock/caddy/caddy' \
+                                                  '/Caddyfile'
 
         # Assert the site config file exists
         self.assertTrue(os.path.isfile(site_config_file))
