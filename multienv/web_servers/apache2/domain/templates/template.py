@@ -20,7 +20,6 @@ class Template:
         :return:
         :rtype: None
         """
-        print('site', self.site)
         sed_inplace(filename, 'sample.test', self.site)
         sed_inplace(filename,
                     'DocumentRoot /var/www/sample/public/',
