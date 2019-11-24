@@ -2,23 +2,23 @@ import unittest
 import shutil
 import os
 
-from multienv.web_servers.nginx.domain.templates.laravel_template import \
-    LaravelTemplate
+from multienv.web_servers.nginx.templates.default_template import \
+    DefaultTemplate
 
 
-class LaravelTemplateTestCase(unittest.TestCase):
+class DefaultTemplateTestCase(unittest.TestCase):
     fixtures_folder = 'tests/fixtures/'
 
     def test_replace_content(self):
         filename = self.fixtures_folder + \
-                   'laradock/nginx/sites/laravel.conf.example'
+                   'laradock/nginx/sites/app.conf.example'
         site = 'test.com'
-        root = 'Project/test.com/public'
+        root = 'Project/test.com'
 
         test_filename = shutil.copyfile(filename, filename + '.test')
 
-        laravel = LaravelTemplate(site, root)
-        laravel.replace_content(test_filename)
+        template = DefaultTemplate(site, root)
+        template.replace_content(test_filename)
 
         server_name = ''
         root_folder = ''

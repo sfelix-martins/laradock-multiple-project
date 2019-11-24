@@ -2,7 +2,7 @@ import unittest
 import shutil
 import os
 
-from multienv.web_servers.nginx.domain.templates.symfony_template import \
+from multienv.web_servers.nginx.templates.symfony_template import \
     SymfonyTemplate
 
 

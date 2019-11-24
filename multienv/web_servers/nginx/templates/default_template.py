@@ -1,5 +1,5 @@
 from multienv.helpers import sed_inplace
-from multienv.web_servers.nginx.domain.templates.template import Template
+from multienv.web_servers.nginx.templates.template import Template
 
 
 class DefaultTemplate(Template):

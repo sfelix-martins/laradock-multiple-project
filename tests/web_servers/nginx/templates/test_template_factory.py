@@ -1,12 +1,12 @@
 import unittest
 
-from multienv.web_servers.nginx.domain.templates.default_template import \
+from multienv.web_servers.nginx.templates.default_template import \
     DefaultTemplate
-from multienv.web_servers.nginx.domain.templates.laravel_template import \
+from multienv.web_servers.nginx.templates.laravel_template import \
     LaravelTemplate
-from multienv.web_servers.nginx.domain.templates.symfony_template import \
+from multienv.web_servers.nginx.templates.symfony_template import \
     SymfonyTemplate
-from multienv.web_servers.nginx.domain.templates.template_factory import \
+from multienv.web_servers.nginx.templates.template_factory import \
     TemplateFactory
 
 
