@@ -110,6 +110,15 @@ server:
     root: Projects/site-1/laravel-api/public
 ```
 
+The `caddy` web server accepts too the `https` param. By the default the `https` value is `False`:
+
+```yaml
+server:
+    name: laravelapi.test
+    root: Projects/site-1/laravel-api/public
+    https: True
+```
+
 Don't forget put the domain in your `hosts` file:
 
 ```
