@@ -1,7 +1,10 @@
 import unittest
 import subprocess
+import os
 from mock import MagicMock
 
+from multienv.database.database import Database
+from multienv.database.dbms.mysql.mysql import MySQL
 from multienv.docker_compose import DockerCompose
 from multienv.exceptions import ProjectNotDefinedException, \
     ServicesNotDefinedException, InvalidYamlFileException, \
@@ -33,11 +36,30 @@ class MultiEnvTestCase(unittest.TestCase):
             laradock_root_folder=self.fixtures_folder + '/laradock'
         )
 
+    def define_config(self, project_definitions, env_definitions=None):
+        projects_file = self.fixtures_folder + '/Projects.yml'
+        with open(projects_file, 'w') as file:
+            file.write(project_definitions)
+
+        env_file = self.fixtures_folder + '/env'
+        if env_definitions:
+            env_file = self.fixtures_folder + '/env_file'
+            with open(env_file, 'w') as file:
+                file.write(env_definitions)
+
+        env_container = self.fixtures_folder + '/env_var_container_build.yml'
+
+        return Config(
+            dot_env=env_file,
+            env_var_container_build=env_container,
+            projects=projects_file,
+            laradock_root_folder=self.fixtures_folder + '/laradock')
+
     def test_defined_project(self):
         multi_env = MultiEnv('site_1', self.config())
 
         self.assertEqual(multi_env.project_name, 'site_1')
-        self.assertEqual(multi_env.project.name, 'site_1')
+        self.assertEqual(multi_env.project.get_name(), 'site_1')
 
         for service in multi_env.project.services:
             self.assertIn(service.name, ['nginx', 'mysql', 'mailhog'])
@@ -53,7 +75,7 @@ class MultiEnvTestCase(unittest.TestCase):
         multi_env = MultiEnv('site_apache2', self.config())
 
         self.assertEqual(multi_env.project_name, 'site_apache2')
-        self.assertEqual(multi_env.project.name, 'site_apache2')
+        self.assertEqual(multi_env.project.get_name(), 'site_apache2')
 
         for service in multi_env.project.services:
             self.assertIn(service.name, ['apache2', 'mysql', 'mailhog'])
@@ -69,7 +91,7 @@ class MultiEnvTestCase(unittest.TestCase):
         multi_env = MultiEnv('site_caddy', self.config())
 
         self.assertEqual(multi_env.project_name, 'site_caddy')
-        self.assertEqual(multi_env.project.name, 'site_caddy')
+        self.assertEqual(multi_env.project.get_name(), 'site_caddy')
 
         for service in multi_env.project.services:
             self.assertIn(service.name, ['caddy', 'mysql', 'mailhog'])
@@ -85,7 +107,7 @@ class MultiEnvTestCase(unittest.TestCase):
         multi_env = MultiEnv('site_without_server', self.config())
 
         self.assertEqual(multi_env.project_name, 'site_without_server')
-        self.assertEqual(multi_env.project.name, 'site_without_server')
+        self.assertEqual(multi_env.project.get_name(), 'site_without_server')
 
         for service in multi_env.project.services:
             self.assertIn(service.name, ['nginx', 'mysql', 'mailhog'])
@@ -97,11 +119,41 @@ class MultiEnvTestCase(unittest.TestCase):
         # Assert defined the correct web server based on services
         self.assertEqual(multi_env.project.web_server, None)
 
+    def test_defined_project_with_mysql(self):
+        multi_env = MultiEnv('site_mysql', self.config())
+
+        self.assertIsInstance(multi_env.project.dbms, MySQL)
+        self.assertEqual(1, len(multi_env.project.get_databases()))
+        for database in multi_env.project.get_databases():
+            self.assertIsInstance(database, Database)
+
+    def test_defined_project_with_mysql_two_databases(self):
+        multi_env = MultiEnv('site_mysql_two_db', self.config())
+
+        self.assertIsInstance(multi_env.project.dbms, MySQL)
+        self.assertEqual(2, len(multi_env.project.get_databases()))
+        for database in multi_env.project.get_databases():
+            self.assertIsInstance(database, Database)
+
+    def test_created_databases_files_mysql(self):
+        multi_env = MultiEnv('site_mysql_two_db', self.config())
+        multi_env.define_databases()
+
+        # Assert exists createdb.sql file
+        create_db_file = self.fixtures_folder + '/laradock/mysql' \
+                                                '/docker-entrypoint-initdb.d' \
+                                                '/site_mysql_two_db' \
+                                                '/createdb.sql'
+
+        self.assertTrue(os.path.isfile(create_db_file))
+
+        os.remove(create_db_file)
+
     def test_defined_project_without_env_vars(self):
         multi_env = MultiEnv('site_without_env', self.config())
 
         self.assertEqual(multi_env.project_name, 'site_without_env')
-        self.assertEqual(multi_env.project.name, 'site_without_env')
+        self.assertEqual(multi_env.project.get_name(), 'site_without_env')
 
         for service in multi_env.project.services:
             self.assertIn(service.name, ['nginx', 'mysql'])
@@ -158,6 +210,47 @@ class MultiEnvTestCase(unittest.TestCase):
                              docker_compose=docker_compose)
         self.assertTrue(multi_env.up())
 
+    def test_up_with_databases_to_create_and_exists_data_folder_for_mysql(self):
+        data_path_host = self.fixtures_folder + '/.laradock/data'
+
+        if not os.path.exists(data_path_host):
+            os.makedirs(data_path_host)
+
+        env = """
+DATA_PATH_HOST=""" + data_path_host + """
+MYSQL_USER=default
+"""
+        project = """
+app:
+  env:
+    - MYSQL_USER: 'smartins'
+  services:
+    - mysql
+  databases:
+    - app
+    - app_test
+"""
+        config = self.define_config(project, env)
+
+        docker_compose = DockerCompose()
+        docker_compose.down = MagicMock()
+        docker_compose.build = MagicMock()
+        docker_compose.up = MagicMock()
+
+        multi_env = MultiEnv('app', config, docker_compose)
+        multi_env.up()
+
+        with open(config.dot_env_file(), 'r') as file:
+            dot_env_file_content = file.read()
+
+            self.assertTrue(
+                'DATA_PATH_HOST=~/.laradock/data/app' in dot_env_file_content)
+            self.assertTrue(
+                'MYSQL_ENTRYPOINT_INITDB=./mysql/docker-entrypoint-initdb.d/app'
+                in dot_env_file_content)
+
+        os.rmdir(data_path_host)
+
     def test_exec(self):
         docker_compose = DockerCompose()
         docker_compose.execute = MagicMock()
@@ -193,6 +286,10 @@ class MultiEnvTestCase(unittest.TestCase):
         with self.assertRaises(ConfigFileNotFoundException):
             MultiEnv('site_without_services',
                      self.config(not_found_project=True))
+
+    def test_define_web_server_without_web_server_defined(self):
+        multi_env = MultiEnv('site_without_server_service', self.config())
+        self.assertIsNone(multi_env.define_web_server())
 
 
 if __name__ == '__main__':

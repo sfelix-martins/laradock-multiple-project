@@ -18,6 +18,23 @@ site_caddy:
     name: siteone.test
     root: Desktop/projects/siteone/public
 
+site_mysql:
+  env:
+    - PHP_VERSION: 7.2
+  services:
+    - mysql
+  databases:
+    - site_mysql
+
+site_mysql_two_db:
+  env:
+    - PHP_VERSION: 7.2
+  services:
+    - mysql
+  databases:
+    - site_mysql
+    - site_mysql_test
+
 site_apache2:
   env:
     - PHP_VERSION: 7.2
@@ -33,6 +50,12 @@ site_without_server:
     - PHP_VERSION: 7.2
   services:
     - nginx
+    - mysql
+
+site_without_server_service:
+  env:
+    - PHP_VERSION: 7.2
+  services:
     - mysql
 
 site_without_services:

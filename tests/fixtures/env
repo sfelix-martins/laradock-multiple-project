@@ -1,1 +1,3 @@
 PHP_VERSION=7.2
+DATA_PATH_HOST=~/.laradock/data/site_mysql_two_db
+MYSQL_ENTRYPOINT_INITDB=./mysql/docker-entrypoint-initdb.d/site_mysql_two_db
